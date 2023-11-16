@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
+import { ThemeContext } from "../../../providers/ThemeProvider";
+import { useContext } from "react";
 
 const Navbar = () => {
+  const { user, logOut } = useContext(ThemeContext);
+
+  const handleLogOut = () => {
+    logOut().then();
+  };
+
   return (
     <div className="fixed w-full bg-black bg-opacity-50 text-white z-10 hover:text-gray-300">
       <div className="max-w-screen-2xl mx-auto z-30">
@@ -36,6 +44,9 @@ const Navbar = () => {
                 <li>
                   <Link to="/order">Order</Link>
                 </li>
+                <li>
+                  <Link to="/Login">Login</Link>
+                </li>
               </ul>
             </div>
             <a className="btn btn-ghost text-xl">Bistro</a>
@@ -51,6 +62,20 @@ const Navbar = () => {
               <li>
                 <Link to="/order">Order</Link>
               </li>
+              {!user ? (
+                <li>
+                  <Link to="/Login">Login</Link>
+                </li>
+              ) : (
+                <li>
+                  <button
+                    onClick={handleLogOut}
+                    className="hover:bg-transparent text-red-800 hover:text-red-600 font-semibold hover:font-bold"
+                  >
+                    Logout
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
           {/* <div className="navbar-end">
