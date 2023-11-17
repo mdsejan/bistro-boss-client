@@ -82,10 +82,12 @@ const Navbar = () => {
             </ul>
           </div>
           <div className="navbar-end">
-            <button className="btn bg-black hover:text-black">
-              <FaCartShopping className="text-xl text-white" />
-              <div className="badge badge-secondary">{cart.length}</div>
-            </button>
+            <Link to="/dashboard/cart">
+              <button className="btn bg-black">
+                <FaCartShopping className="text-xl text-white hover:text-black" />
+                <div className="badge badge-secondary">{cart.length}</div>
+              </button>
+            </Link>
           </div>
         </div>
       </div>
