@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
+import { FaCartShopping } from "react-icons/fa6";
 import { ThemeContext } from "../../../providers/ThemeProvider";
 import { useContext } from "react";
+import useCart from "../../../hooks/useCart";
 
 const Navbar = () => {
   const { user, logOut } = useContext(ThemeContext);
+  const [cart] = useCart();
 
   const handleLogOut = () => {
     logOut().then();
@@ -45,7 +48,7 @@ const Navbar = () => {
                   <Link to="/order">Order</Link>
                 </li>
                 <li>
-                  <Link to="/Login">Login</Link>
+                  <Link to="/login">Login</Link>
                 </li>
               </ul>
             </div>
@@ -64,7 +67,7 @@ const Navbar = () => {
               </li>
               {!user ? (
                 <li>
-                  <Link to="/Login">Login</Link>
+                  <Link to="/login">Login</Link>
                 </li>
               ) : (
                 <li>
@@ -78,9 +81,12 @@ const Navbar = () => {
               )}
             </ul>
           </div>
-          {/* <div className="navbar-end">
-            <a className="btn">Button</a>
-          </div> */}
+          <div className="navbar-end">
+            <button className="btn bg-black hover:text-black">
+              <FaCartShopping className="text-xl text-white" />
+              <div className="badge badge-secondary">{cart.length}</div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
