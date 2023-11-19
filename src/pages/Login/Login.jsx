@@ -1,16 +1,38 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import { ThemeContext } from "../../providers/ThemeProvider";
+import {
+  loadCaptchaEnginge,
+  LoadCanvasTemplate,
+  validateCaptcha,
+} from "react-simple-captcha";
+import { Helmet } from "react-helmet-async";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const { googleSignIn, signInUser } = useContext(ThemeContext);
 
   const location = useLocation();
+
+  useEffect(() => {
+    loadCaptchaEnginge(6);
+  }, []);
+
+  const handleValidateCaptcha = (e) => {
+    const user_captcha_value = e.target.value;
+    if (validateCaptcha(user_captcha_value)) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -34,8 +56,15 @@ const Login = () => {
 
   const handleGoogleLogin = () => {
     googleSignIn()
-      .then(() => {
+      .then((result) => {
         toast.success("Logged in");
+        const userInfo = {
+          email: result.user?.email,
+          name: result.user?.displayName,
+        };
+        axiosPublic.post("/user", userInfo).then((res) => {
+          console.log(res.data);
+        });
 
         navigate(location?.state ? location.state : "/");
       })
@@ -48,109 +77,132 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
   return (
-    <div className="lg:min-h-screen px-5 py-12 lg:py-0 flex items-center justify-center ">
-      <div className="flex bg-white dark-bg-yellow  rounded-lg shadow-sm border w-full max-w-4xl">
-        {/* Left Column for Image */}
-        <div
-          className="w-1/2 bg-[#ACD27A] p-12 hidden md:block bg-no-repeat bg-bottom bg-cover "
-          style={{
-            backgroundImage: "url('https://i.ibb.co/3vzKPQz/1-1-370x500.webp')",
-          }}
-        >
-          <h1 className="text-3xl font-semibold text-center mb-1 text-white ">
-            Welcome Back
-          </h1>
-          {/* <img
+    <>
+      <Helmet>
+        <title>Bistro | Login </title>
+      </Helmet>
+      <div className="lg:min-h-screen px-5 py-12 lg:py-0 flex items-center justify-center ">
+        <div className="flex bg-white dark-bg-yellow  rounded-lg shadow-sm border w-full max-w-4xl">
+          {/* Left Column for Image */}
+          <div
+            className="w-1/2 bg-[#ACD27A] p-12 hidden md:block bg-no-repeat bg-bottom bg-cover "
+            style={{
+              backgroundImage:
+                "url('https://i.ibb.co/3vzKPQz/1-1-370x500.webp')",
+            }}
+          >
+            <h1 className="text-3xl font-semibold text-center mb-1 text-white ">
+              Welcome Back
+            </h1>
+            {/* <img
             src="https://i.ibb.co/HKVWrZP/login.png"
             alt="Login Image"
             className="w-full h-full object-cover"
           /> */}
-        </div>
+          </div>
 
-        {/* Right Column for Login Form */}
-        <div className="w-full md:w-1/2 p-6">
-          <div className="max-w-sm mx-auto">
-            {/* <h1 className="text-3xl font-semibold text-center mb-4">Login</h1> */}
-            <div className="text-center">
-              <button
-                onClick={handleGoogleLogin}
-                className="btn btn-outline w-full mt-4 capitalize font-bold text-[#ACD27A] hover:bg-[#ACD27A]"
-              >
-                <img
-                  className="w-4"
-                  src="https://i.ibb.co/HpLpWjn/google.png"
-                  alt="google"
-                />
-                <span>Login With Google</span>
-              </button>
-              <div className="divider my-10">OR</div>
-            </div>
-            <form onSubmit={handleLogin}>
-              <div className="mb-4">
-                <label
-                  htmlFor="email"
-                  className="block text-gray-700 font-bold mb-2"
+          {/* Right Column for Login Form */}
+          <div className="w-full md:w-1/2 p-6">
+            <div className="max-w-sm mx-auto">
+              {/* <h1 className="text-3xl font-semibold text-center mb-4">Login</h1> */}
+              <div className="text-center">
+                <button
+                  onClick={handleGoogleLogin}
+                  className="btn btn-outline w-full mt-4 capitalize font-bold text-[#ACD27A] hover:bg-[#ACD27A]"
                 >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                  required
-                />
+                  <img
+                    className="w-4"
+                    src="https://i.ibb.co/HpLpWjn/google.png"
+                    alt="google"
+                  />
+                  <span>Login With Google</span>
+                </button>
+                <div className="divider my-10">OR</div>
               </div>
-              <div className="mb-4 relative">
-                <label
-                  htmlFor="password"
-                  className="block text-gray-700 font-bold mb-2"
-                >
-                  Password
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                  required
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <button
-                    type="button"
-                    id="togglePassword"
-                    className="text-gray-400 focus:outline-none"
-                    onClick={togglePassword}
+              <form onSubmit={handleLogin}>
+                <div className="mb-4">
+                  <label
+                    htmlFor="email"
+                    className="block text-gray-700 font-bold mb-2"
                   >
-                    {showPassword ? (
-                      <FaEyeSlash className="text-xl mt-7"></FaEyeSlash>
-                    ) : (
-                      <FaEye className="text-xl mt-7"></FaEye>
-                    )}
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                    required
+                  />
+                </div>
+                <div className="mb-4 relative">
+                  <label
+                    htmlFor="password"
+                    className="block text-gray-700 font-bold mb-2"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                    required
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <button
+                      type="button"
+                      id="togglePassword"
+                      className="text-gray-400 focus:outline-none"
+                      onClick={togglePassword}
+                    >
+                      {showPassword ? (
+                        <FaEyeSlash className="text-xl mt-7"></FaEyeSlash>
+                      ) : (
+                        <FaEye className="text-xl mt-7"></FaEye>
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label>
+                    <LoadCanvasTemplate />
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="type the captcha above"
+                    onBlur={handleValidateCaptcha}
+                    name="captcha"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                  />
+                </div>
+                <div className="mb-4">
+                  <button
+                    disabled={disabled}
+                    type="submit"
+                    className={`flex items-center justify-center w-full text-white py-2 px-4 rounded-lg ${
+                      disabled
+                        ? "bg-gray-300 hover:bg-gray-300 "
+                        : "bg-[#ACD27A] hover:bg-[#ACD27A]"
+                    } focus:outline-none`}
+                  >
+                    Login
                   </button>
                 </div>
+              </form>
+              <div>
+                <p className="mt-8 text-md">
+                  New to this website? Please &nbsp;
+                  <Link to="/register" className="text-[#ACD27A] font-bold">
+                    Register
+                  </Link>
+                </p>
               </div>
-              <div className="mb-4">
-                <button
-                  type="submit"
-                  className="flex items-center justify-center w-full text-white py-2 px-4 rounded-lg bg-[#ACD27A] hover:bg-[#ACD27A] focus:outline-none"
-                >
-                  Login
-                </button>
-              </div>
-            </form>
-            <div>
-              <p className="mt-8 text-md">
-                New to this website? Please &nbsp;
-                <Link to="/register" className="text-[#ACD27A] font-bold">
-                  Register
-                </Link>
-              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

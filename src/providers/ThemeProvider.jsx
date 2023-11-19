@@ -9,6 +9,7 @@ import {
   signOut,
 } from "firebase/auth";
 import auth from "../config/Firebase.config";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const GoogleProvider = new GoogleAuthProvider();
 
@@ -17,6 +18,7 @@ export const ThemeContext = createContext(null);
 const ThemeProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const axiosPublic = useAxiosPublic();
 
   const createUser = (email, password) => {
     setLoading(true);
@@ -41,6 +43,18 @@ const ThemeProvider = ({ children }) => {
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        // get tocken and store client
+        const userInfo = { email: currentUser.email };
+        axiosPublic.post("/jwt", userInfo).then((res) => {
+          if (res.data.token) {
+            localStorage.setItem("access-token", res.data.token);
+          }
+        });
+      } else {
+        //TODO: Remove Token
+        localStorage.removeItem("access-token");
+      }
       setLoading(false);
       console.log("Observed User:", currentUser);
     });
@@ -48,7 +62,7 @@ const ThemeProvider = ({ children }) => {
     return () => {
       unSubscribe();
     };
-  }, [user]);
+  }, [user, axiosPublic]);
 
   const themeInfo = {
     googleSignIn,
