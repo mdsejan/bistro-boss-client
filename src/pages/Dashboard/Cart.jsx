@@ -2,6 +2,7 @@ import Swal from "sweetalert2";
 import useCart from "../../hooks/useCart";
 import { FaTrash } from "react-icons/fa6";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const [cart, refetch] = useCart();
@@ -42,9 +43,20 @@ const Cart = () => {
         <h2 className="text-3xl">
           <b>Price:</b> {totalPrice}
         </h2>
-        <button className="btn px-12 bg-[#D1A054] hover:bg-black text-white">
-          Pay
-        </button>
+        {cart.length ? (
+          <Link to="/dashboard/pay">
+            <button
+              disabled={!cart.length}
+              className="btn px-12 bg-[#D1A054] hover:bg-black text-white"
+            >
+              Pay
+            </button>
+          </Link>
+        ) : (
+          <button className="btn px-12" disabled="disabled">
+            Pay
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto max-w-screen-lg mx-auto bg-white p-10 rounded-b-lg">
