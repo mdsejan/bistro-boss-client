@@ -3,9 +3,11 @@ import { FaCartShopping } from "react-icons/fa6";
 import { ThemeContext } from "../../../providers/ThemeProvider";
 import { useContext } from "react";
 import useCart from "../../../hooks/useCart";
+import useAdmin from "../../../hooks/useAdmin";
 
 const Navbar = () => {
   const { user, logOut } = useContext(ThemeContext);
+  const [isAdmin] = useAdmin();
   const [cart] = useCart();
 
   const handleLogOut = () => {
@@ -65,6 +67,18 @@ const Navbar = () => {
               <li>
                 <Link to="/order">Order</Link>
               </li>
+              {user && isAdmin && (
+                <li>
+                  <Link to="/dashboard/adminHome">Dashboard</Link>
+                </li>
+              )}
+
+              {user && !isAdmin && (
+                <li>
+                  <Link to="/dashboard/userHome">Dashboard</Link>
+                </li>
+              )}
+
               {!user ? (
                 <li>
                   <Link to="/login">Login</Link>

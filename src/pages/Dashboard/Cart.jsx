@@ -43,10 +43,10 @@ const Cart = () => {
         <h2 className="text-3xl">
           <b>Price:</b> {totalPrice}
         </h2>
-        {cart.length ? (
+        {cart?.length ? (
           <Link to="/dashboard/pay">
             <button
-              disabled={!cart.length}
+              disabled={!cart?.length}
               className="btn px-12 bg-[#D1A054] hover:bg-black text-white"
             >
               Pay
@@ -58,48 +58,53 @@ const Cart = () => {
           </button>
         )}
       </div>
-
       <div className="overflow-x-auto max-w-screen-lg mx-auto bg-white p-10 rounded-b-lg">
-        <table className="table">
-          {/* head */}
-          <thead className="bg-[#D1A054] text-lg text-white font-bold">
-            <tr>
-              <th>#</th>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart.map((item, index) => (
-              <tr key={item._id}>
-                <th>{index + 1}</th>
-                <td>
-                  <div>
-                    <div className="w-20 h-20 rounded">
-                      <img src={item.image} alt={item.name} />
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="font-bold">{item.name}</div>
-                </td>
-                <td>
-                  <h3 className="font-semibold text-xl">$ {item.price}</h3>
-                </td>
-                <th>
-                  <button
-                    onClick={() => handleDelete(item._id)}
-                    className="text-2xl text-[#B91C1C] hover:text-black"
-                  >
-                    <FaTrash />
-                  </button>
-                </th>
+        {cart?.length > 0 ? (
+          <table className="table">
+            {/* head */}
+            <thead className="bg-[#D1A054] text-lg text-white font-bold">
+              <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {cart?.map((item, index) => (
+                <tr key={item._id}>
+                  <th>{index + 1}</th>
+                  <td>
+                    <div>
+                      <div className="w-20 h-20 rounded">
+                        <img src={item.image} alt={item.name} />
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="font-bold">{item.name}</div>
+                  </td>
+                  <td>
+                    <h3 className="font-semibold text-xl">$ {item.price}</h3>
+                  </td>
+                  <th>
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="text-2xl text-[#B91C1C] hover:text-black"
+                    >
+                      <FaTrash />
+                    </button>
+                  </th>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-xl font-semibold text-red-600">
+            No Cart Data Availables
+          </div>
+        )}
       </div>
     </>
   );

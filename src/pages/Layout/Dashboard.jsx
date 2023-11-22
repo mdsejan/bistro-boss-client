@@ -1,15 +1,26 @@
-import { FaCartShopping, FaHouse } from "react-icons/fa6";
-import { MdReviews } from "react-icons/md";
+import { FaCartShopping, FaGear, FaHouse, FaUsers } from "react-icons/fa6";
+import {
+  MdAddToPhotos,
+  MdOutlineLogout,
+  MdPayment,
+  MdReviews,
+} from "react-icons/md";
 import { RiMenuSearchFill } from "react-icons/ri";
 import { NavLink, Outlet } from "react-router-dom";
 import useCart from "../../hooks/useCart";
 import useAdmin from "../../hooks/useAdmin";
+import { useContext } from "react";
+import { ThemeContext } from "../../providers/ThemeProvider";
 
 const Dashboard = () => {
   const [cart] = useCart();
-
+  const { logOut } = useContext(ThemeContext);
   // ToDo: Get isadmin value from the database
   const [isAdmin] = useAdmin();
+
+  const handleLogOut = () => {
+    logOut().then();
+  };
   return (
     <div className="flex">
       <div className="w-64 min-h-screen bg-orange-400 py-10 px-5">
@@ -18,27 +29,32 @@ const Dashboard = () => {
             <>
               <li>
                 <NavLink to="/dashboard/adminHome">
-                  <FaHouse /> Admin Home
+                  <FaHouse /> Dashboard
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/addItems">
-                  <FaHouse /> Add Items
+                  <MdAddToPhotos /> Add Items
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/manageItems">
-                  <FaHouse /> Manage Items
+                  <FaGear /> Manage Items
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/users">
-                  <FaHouse /> All Users
+                  <FaUsers /> All Users
                 </NavLink>
               </li>
             </>
           ) : (
             <>
+              <li>
+                <NavLink to="/dashboard/userHome">
+                  <FaHouse /> Dashboard
+                </NavLink>
+              </li>
               <li>
                 <NavLink to="/dashboard/cart">
                   <FaCartShopping></FaCartShopping> My Cart ( {cart.length} )
@@ -46,11 +62,11 @@ const Dashboard = () => {
               </li>
               <li>
                 <NavLink to="/dashboard/paymentHistory">
-                  <FaCartShopping></FaCartShopping> Payment History
+                  <MdPayment /> Payment History
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/add review">
+                <NavLink to="/dashboard/addReview">
                   <MdReviews /> Add a Review
                 </NavLink>
               </li>
@@ -68,9 +84,14 @@ const Dashboard = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/">
+            <NavLink to="/menu">
               <RiMenuSearchFill /> Menu
             </NavLink>
+          </li>
+          <li>
+            <button onClick={handleLogOut}>
+              <MdOutlineLogout /> Logout
+            </button>
           </li>
         </ul>
       </div>
